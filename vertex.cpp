@@ -28,15 +28,10 @@ void Vertex::setColor(const QVector3D& color)
 
 int Vertex::positionOffset()
 {
-	offsetof(Vertex, m_position);
+	return offsetof(Vertex, m_position);
 }
 
 int Vertex::colorOffset()
 {
-	offsetof(Vertex, m_color);
-}
-
-int Vertex::stride()
-{
-	sizeof(Vertex);
+	return offsetof(Vertex, m_color);
 }

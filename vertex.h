@@ -15,7 +15,6 @@ class Vertex
 
 		static int positionOffset();
 		static int colorOffset();
-		static int stride();
 
 	public:
 		static const int s_positionTupleSize = 3;

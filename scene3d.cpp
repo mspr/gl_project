@@ -1,16 +1,9 @@
 #include "scene3d.h"
+#include "vertex.h"
 
-static GLfloat vertices[] = {
-	0.5, 0.0, -1.0,
-	0.0, 0.5, -1.0,
-	-0.5, 0.0, -1.0
-};
-
-static GLfloat colors[] = {
-	1.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 1.0f
-};
+static QVector<Vertex> vertices = { Vertex(QVector3D(0.5, 0.0, -1.0), QVector3D(1.0, 0.0, 0.0)),
+																		Vertex(QVector3D(0.0, 0.5, -1.0), QVector3D(0.0, 1.0, 0.0)),
+																		Vertex(QVector3D(-0.5, 0.0, -1.0), QVector3D(0.0, 0.0, 1.0)) };
 
 Scene3D::Scene3D(QWidget* parent)
 	: QOpenGLWidget(parent)
@@ -83,9 +76,7 @@ void Scene3D::initializeGL()
 
 	m_buffer.create();
 	m_buffer.bind();
-	m_buffer.allocate(sizeof(vertices) + sizeof(colors));
-	m_buffer.write(0, vertices, sizeof(vertices));
-	m_buffer.write(sizeof(vertices), colors, sizeof(colors));
+	m_buffer.allocate(vertices.constData(), vertices.size()*sizeof(Vertex));
 	m_buffer.release();
 
 	QOpenGLVertexArrayObject::Binder vertexArrayObjectBinder(&m_vertexArrayObject);
@@ -96,8 +87,8 @@ void Scene3D::initializeGL()
 void Scene3D::setupVertexAttributes()
 {
 		m_buffer.bind();
-		m_shaderProgram->setAttributeBuffer(m_positionId, GL_FLOAT, 0, 3);
-		m_shaderProgram->setAttributeBuffer(m_colorId, GL_FLOAT, sizeof(vertices), 3);
+		m_shaderProgram->setAttributeBuffer(m_positionId, GL_FLOAT, Vertex::positionOffset(), Vertex::s_positionTupleSize, sizeof(Vertex));
+		m_shaderProgram->setAttributeBuffer(m_colorId, GL_FLOAT, Vertex::colorOffset(), Vertex::s_colorTupleSize, sizeof(Vertex));
 		m_shaderProgram->enableAttributeArray(m_positionId);
 		m_shaderProgram->enableAttributeArray(m_colorId);
 		m_buffer.release();
@@ -112,7 +103,6 @@ void Scene3D::resizeGL(int w, int h)
 void Scene3D::paintGL()
 {
 	glClearColor(1, 1, 1, 1);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (!m_vertexArrayObject.isCreated())
@@ -134,8 +124,6 @@ void Scene3D::paintGL()
 
 	m_vertexArrayObject.bind();
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-	//m_shaderProgram->disableAttributeArray(m_positionId);
-	//m_shaderProgram->disableAttributeArray(m_colorId);
 	m_vertexArrayObject.release();
 
 	m_shaderProgram->release();
