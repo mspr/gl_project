@@ -118,7 +118,7 @@ void Scene3D::paintGL()
 	modelview.rotate(45.0, 0.0f, 0.0f, 1.0f);
 
 	QMatrix4x4 projection;
-//	projection.perspective(70.0, (double) width() / height(), 1.0, 100.0);
+	projection.perspective(70.0, (double) width() / height(), 1.0, 100.0);
 
 	m_shaderProgram->setUniformValue(m_modelviewId, modelview);
 	m_shaderProgram->setUniformValue(m_projectionId, projection);
