@@ -29,11 +29,13 @@ void Scene3D::initializeGL()
 	const char *vsrc =
 			"#version 150\n"
 			"in vec3 in_vertex;\n"
+			"uniform mat4 modelview;\n"
+			"uniform mat4 projection;\n"
 			"in vec3 in_color;\n"
 			"out vec4 color;\n"
 			"void main()\n"
 			"{\n"
-			"    gl_Position = vec4(in_vertex, 1.0);\n"
+			"    gl_Position = projection * modelview * vec4(in_vertex, 1.0);\n"
 			"    color = vec4(in_color, 1.0);\n"
 			"}\n";
 	if (!m_vertexShader->compileSourceCode(vsrc))
@@ -72,7 +74,8 @@ void Scene3D::initializeGL()
 
 	m_positionId = m_shaderProgram->attributeLocation("in_vertex");
 	m_colorId = m_shaderProgram->attributeLocation("in_color");
-	//m_modelviewId = m_shaderProgram->uniformLocation("matrix");
+	m_modelviewId = m_shaderProgram->uniformLocation("modelview");
+	m_projectionId = m_shaderProgram->uniformLocation("projection");
 
 	m_buffer.create();
 	m_buffer.bind();
@@ -108,19 +111,17 @@ void Scene3D::paintGL()
 	if (!m_vertexArrayObject.isCreated())
 		close();
 
-	if (!m_shaderProgram->bind())
-		close();
+	m_shaderProgram->bind();
 
-	//QMatrix4x4 modelview;
-	//matrix.perspective(60.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	//modelview.translate(0.0f, 0.0f, -2.0f);
-	//matrix.rotate(m_angle, 0.0f, 1.0f, 0.0f);
+	QMatrix4x4 modelview;
+	modelview.translate(0.2f, 0.0f, 0.0f);
+	modelview.rotate(45.0, 0.0f, 0.0f, 1.0f);
 
-//	QMatrix4x4 projection;
+	QMatrix4x4 projection;
 //	projection.perspective(70.0, (double) width() / height(), 1.0, 100.0);
 
-//	m_shaderProgram->setUniformValue(m_modelviewId, modelview);
-//	m_shaderProgram->setUniformValue(m_projectionId, projection);
+	m_shaderProgram->setUniformValue(m_modelviewId, modelview);
+	m_shaderProgram->setUniformValue(m_projectionId, projection);
 
 	m_vertexArrayObject.bind();
 	glDrawArrays(GL_TRIANGLES, 0, 3);
