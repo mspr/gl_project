@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     vertex.cpp \
-    scene3d.cpp
+    scene3d.cpp \
+    camera.cpp
 
 HEADERS  += mainwindow.h \
     vertex.h \
-    scene3d.h
+    scene3d.h \
+    camera.h
 
 FORMS    += mainwindow.ui
 
